@@ -1,128 +1,155 @@
 {% extends "base.html" %}
 
-{% block title %}项目背景 - DreamEcho{% endblock %}
-
-{% block extra_head %}
-<style>
-    .about-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 2rem;
-    }
-    
-    .section {
-        margin-bottom: 4rem;
-        background: rgba(26, 26, 26, 0.95);
-        border-radius: 15px;
-        padding: 2rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-    
-    .section-title {
-        color: var(--accent-color);
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-    }
-    
-    .stats-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 2rem;
-        margin: 2rem 0;
-    }
-    
-    .stat-card {
-        background: rgba(42, 42, 42, 0.8);
-        padding: 1.5rem;
-        border-radius: 10px;
-        text-align: center;
-    }
-    
-    .stat-number {
-        font-size: 2.5rem;
-        color: var(--accent-color);
-        margin-bottom: 0.5rem;
-    }
-    
-    .stat-label {
-        color: var(--text-secondary);
-    }
-    
-    .quote {
-        font-style: italic;
-        color: var(--text-secondary);
-        border-left: 4px solid var(--accent-color);
-        padding-left: 1rem;
-        margin: 2rem 0;
-    }
-    
-    @media (max-width: 768px) {
-        .stats-grid {
-            grid-template-columns: repeat(2, 1fr);
-        }
-    }
-</style>
-{% endblock %}
+{% block title %}{{ _('About Us') }} - DreamEcho{% endblock %}
 
 {% block content %}
-<div class="about-container">
-    <section class="section">
-        <h2 class="section-title">灵感来源与思考</h2>
-        <p>梦境不仅是脑海中的幻象，它调动我们的感官，让我们"身临其境"。心理学研究表明，快速眼动睡眠（REM）期间，大脑的情感中枢（如杏仁核）高度活跃，与清醒时的情感体验有相似之处（Nielsen, 2010）。</p>
-        <p>对我来说，那次飞越老家的梦就像一次情感的回溯，能否通过设计让这种体验从虚幻变为可感知的现实？</p>
-        <p>我记得有一次醒来，舍友突然说你昨天讲了好久梦话，突然想起来昨天记忆深刻的梦，再让AI帮我解梦之后的我大为震惊，原来深层次的我是这样，我平时是否忘记了应该的自我？梦境如此真实，却又如此遥不可及。</p>
-        <p>这让我不禁思考：为什么我们常将梦境视为虚幻，而忽视其对情感的深远影响？为什么这么鲜活的体验只能停留在梦里，无法留存？如果能有一种方式，把梦境的片段记录下来，甚至变成可以触摸的实体，会不会让这份情感更有重量？</p>
-    </section>
+<!-- Hero Section -->
+<section class="relative container mx-auto px-4 pt-20 pb-20">
+    <div class="max-w-4xl mx-auto text-center animate-fade-in">
+        <h1 class="text-5xl md:text-7xl font-bold mb-6 text-gradient-dreamecho">{{ _('About DreamEcho') }}</h1>
+        <p class="text-xl text-muted-foreground mb-12">
+            {{ _('Exploring the boundaries between dreams and reality, using technology to give form to imagination.') }}
+        </p>
+    </div>
+</section>
 
-    <section class="section">
-        <h2 class="section-title">项目调研 —— 为何梦境值得被存档？</h2>
-        <p>梦境是个人经历的重要部分，却极易被遗忘。每人每晚经历4-6个梦，年约1500次（Hobson, 2002），但研究显示，80%以上的梦境在醒后迅速消失（Barrett, 2023）。60%的梦与过去相关，45%影响白天情绪（Domhoff, 2003），凸显其情感价值。</p>
-        <p>然而，由于大脑在REM睡眠时海马体记忆存储功能减弱（Andrillon, 2017），这些经历往往无迹可寻。"梦中的经历也是经历"，存档梦境是对其意义的肯定，也是对遗忘的抵抗。</p>
+<!-- Creator Section -->
+<section class="container mx-auto px-4 py-20 bg-black/20">
+    <div class="max-w-5xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+            <div class="glass p-8 rounded-2xl animate-slide-up">
+                <div class="flex flex-col items-center text-center">
+                    <div class="w-32 h-32 rounded-full bg-gradient-to-r from-primary to-dreamecho-accent p-1 mb-6">
+                        <img src="https://www.wujiajun.space/avatar.jpg" alt="Jiajun Wu" class="w-full h-full rounded-full object-cover" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJ4TWlkWU1pZCBzbGljZSIgZm9jdXNhYmxlPSJmYWxzZSIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsPSJQbGFjZWhvbGRlciI+PHJlY3Qgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0iIzMzMyI+PC9yZWN0Pjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmaWxsPSIjNzc3IiBkeT0iLjNlbSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIyMCI+Sld1PC90ZXh0Pjwvc3ZnPg=='">
+                    </div>
+                    <h2 class="text-2xl font-bold text-foreground mb-2">{{ _('Jiajun Wu') }}</h2>
+                    <p class="text-primary mb-4">{{ _('Industrial Designer & HCI Researcher') }}</p>
+                    <p class="text-muted-foreground mb-6">
+                        {{ _('Shenzhen Tech University · Class of 2026') }}
+                    </p>
+                    <div class="flex gap-4 mb-8">
+                        <a href="https://www.wujiajun.space" target="_blank" class="px-4 py-2 bg-secondary hover:bg-accent text-secondary-foreground rounded-full transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                            Website
+                        </a>
+                        <a href="mailto:epwujiajun@icloud.com" class="px-4 py-2 bg-secondary hover:bg-accent text-secondary-foreground rounded-full transition-colors flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                            Email
+                        </a>
+                    </div>
+                    <blockquote class="italic text-muted-foreground border-l-2 border-primary pl-4 text-left w-full">
+                        "{{ _('I believe design is the programming of perception—making digital interaction embodied, sensible, and humane.') }}"
+                    </blockquote>
+                </div>
+            </div>
+            
+            <div class="space-y-8 animate-slide-up" style="animation-delay: 0.2s;">
+                <div>
+                    <h3 class="text-xl font-bold text-foreground mb-4">{{ _('Inspiration & Philosophy') }}</h3>
+                    <p class="text-muted-foreground mb-4">
+                        {{ _('Dreams are not just illusions in the mind; they engage our senses and make us feel "immersed." Psychological research shows that during REM sleep, the brain\'s emotional centers are highly active, similar to waking emotional experiences.') }}
+                    </p>
+                    <p class="text-muted-foreground mb-4">
+                        {{ _('Why do we often dismiss dreams as unreal and ignore their profound impact on emotions? Why can such vivid experiences only stay in sleep and cannot be preserved?') }}
+                    </p>
+                    <p class="text-muted-foreground">
+                        {{ _('DreamEcho aims to answer these questions by turning fleeting dream fragments into tangible digital assets, giving weight to these emotions.') }}
+                    </p>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold text-foreground mb-4">{{ _('Research & Background') }}</h3>
+                    <ul class="space-y-2 text-muted-foreground">
+                        <li class="flex items-start gap-2">
+                            <span class="text-primary mt-1">•</span>
+                            <span>{{ _('We experience ~1500 dreams per year, but 80% are forgotten quickly upon waking.') }}</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-primary mt-1">•</span>
+                            <span>{{ _('60% of dreams relate to the past, and 45% influence daily emotions.') }}</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <span class="text-primary mt-1">•</span>
+                            <span>{{ _('By archiving dreams as 3D models and NFTs, we resist forgetting and validate the significance of subconscious experiences.') }}</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Selected Projects Section -->
+<section class="container mx-auto px-4 py-20">
+    <div class="text-center mb-16">
+        <h2 class="text-3xl font-bold text-foreground mb-4">{{ _('Other Projects by Creator') }}</h2>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <!-- RealityBadge -->
+        <a href="https://www.wujiajun.space" target="_blank" class="glass p-6 rounded-xl hover:bg-white/5 transition-all group animate-slide-up" style="animation-delay: 0.1s;">
+            <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors">RealityBadge</h3>
+            <p class="text-sm text-primary mb-2">AR × Gen-Music · iOS App</p>
+            <p class="text-sm text-muted-foreground">{{ _('Turning life moments into shareable memory badges with liquid glass aesthetics.') }}</p>
+        </a>
         
-        <div class="quote">
-            "梦境是通往潜意识的皇家大道" - 弗洛伊德
+        <!-- Limo Smart Feeder -->
+        <a href="https://www.wujiajun.space" target="_blank" class="glass p-6 rounded-xl hover:bg-white/5 transition-all group animate-slide-up" style="animation-delay: 0.2s;">
+            <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors">Limo Smart Feeder</h3>
+            <p class="text-sm text-primary mb-2">Gesture Interaction · Hardware</p>
+            <p class="text-sm text-muted-foreground">{{ _('Award-winning emotional interaction device for Marimo algae balls.') }}</p>
+        </a>
+        
+        <!-- Photonic Nose -->
+        <a href="https://www.wujiajun.space" target="_blank" class="glass p-6 rounded-xl hover:bg-white/5 transition-all group animate-slide-up" style="animation-delay: 0.3s;">
+            <h3 class="text-lg font-bold text-foreground group-hover:text-primary transition-colors">Photonic Nose</h3>
+            <p class="text-sm text-primary mb-2">Health Sensing · Research</p>
+            <p class="text-sm text-muted-foreground">{{ _('Non-invasive health monitoring exploration via breath spectral analysis.') }}</p>
+        </a>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="container mx-auto px-4 py-20">
+    <div class="max-w-2xl mx-auto glass p-8 rounded-2xl text-center animate-slide-up">
+        <h2 class="text-3xl font-bold text-foreground mb-6">{{ _('Get in Touch') }}</h2>
+        <p class="text-muted-foreground mb-8">
+            {{ _('Open to research collaborations, academic discussions, or project inquiries.') }}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="mailto:epwujiajun@icloud.com" class="px-8 py-3 bg-primary text-primary-foreground rounded-full font-medium hover:opacity-90 transition-opacity">
+                {{ _('Send Email') }}
+            </a>
+            <a href="https://www.wujiajun.space" target="_blank" class="px-8 py-3 border border-border hover:border-primary text-foreground rounded-full font-medium transition-colors">
+                {{ _('Visit Portfolio') }}
+            </a>
         </div>
+    </div>
+</section>
+{% endblock %}
 
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-number">1500+</div>
-                <div class="stat-label">年均梦境体验</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">80%</div>
-                <div class="stat-label">梦境易逝率</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">60%</div>
-                <div class="stat-label">与过去相关</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-number">45%</div>
-                <div class="stat-label">影响日常情绪</div>
-            </div>
-        </div>
-    </section>
+{% block extra_js %}
+<script>
+    // Animation on scroll
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    };
 
-    <section class="section">
-        <h2 class="section-title">梦境NFT：从想象到数字资产</h2>
-        <p>如果用技术捕捉梦境的关键词（比如"老家""飞翔"），再生成图像或3D模型，会不会让梦不再只是转瞬即逝的记忆？我想象一个场景：醒来后，我能捧着一个3D打印的小房子模型，可以读取其内容，像将CD放到播放机一样，这种"触摸梦境"的体验或许能延长它的生命。</p>
-        <p>就像音乐从CD变成了流媒体，梦境也可以在虚拟世界中找到新的生命。通过NFT技术，我们可以：</p>
-        <ul>
-            <li>捕捉梦境：通过文字或速写记录梦中的场景、情感和细节</li>
-            <li>艺术转化：利用AI工具和3D建模技术，将梦境描述转化为可视化的数字艺术品</li>
-            <li>铸造NFT：将这些数字作品上传至区块链，确保每个梦境的唯一性和所有权</li>
-        </ul>
-    </section>
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
 
-    <section class="section">
-        <h2 class="section-title">技术创新与挑战</h2>
-        <p>《Nature Neuroscience》2023年研究表明，梦境中的情绪体验会激活与真实经历相同的大脑区域（海马体与杏仁核）。结合MIT媒体实验室的《Dormio》项目研究成果，我们致力于将梦境存档技术推向大众。</p>
-        <p>目前主要的技术痛点包括：</p>
-        <ul>
-            <li>捕捉难度：梦境的模糊性和主观性让记录充满挑战，AI分析准确性待提升</li>
-            <li>输出局限：现有设备（如VR头显）成本高、体验单一，无法满足日常情感需求</li>
-            <li>普及性：缺乏面向普通用户、价格亲民的梦境存档工具</li>
-        </ul>
-    </section>
-</div>
-{% endblock %} 
+    document.querySelectorAll('.animate-slide-up, .animate-fade-in').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(20px)';
+        el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+        observer.observe(el);
+    });
+</script>
+{% endblock %}

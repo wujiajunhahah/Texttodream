@@ -1,139 +1,132 @@
 {% extends "base.html" %}
 
-{% block title %}API文档 - 梦境建模系统{% endblock %}
+{% block title %}{{ _('API Documentation') }} - DreamEcho{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/api_docs.css') }}" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css">
+{% endblock %}
 
 {% block content %}
-<div class="api-docs">
-    <!-- 侧边栏导航 -->
-    <div class="api-sidebar">
-        <div class="api-nav">
-            <h3>目录</h3>
-            <ul>
-                <li><a href="#overview">概述</a></li>
-                <li><a href="#authentication">认证</a></li>
-                <li><a href="#endpoints">API端点</a></li>
-                <li><a href="#models">模型相关</a></li>
-                <li><a href="#users">用户相关</a></li>
-                <li><a href="#examples">示例代码</a></li>
-                <li><a href="#rate-limits">速率限制</a></li>
-                <li><a href="#errors">错误处理</a></li>
+<div class="container mx-auto px-4 py-12 flex flex-col md:flex-row gap-8">
+    <!-- Sidebar Navigation -->
+    <div class="w-full md:w-64 flex-shrink-0">
+        <div class="sticky top-24 glass p-6 rounded-xl">
+            <h3 class="font-bold text-lg mb-4 text-foreground">{{ _('Table of Contents') }}</h3>
+            <ul class="space-y-2 text-sm">
+                <li><a href="#overview" class="text-muted-foreground hover:text-primary transition-colors block">{{ _('Overview') }}</a></li>
+                <li><a href="#authentication" class="text-muted-foreground hover:text-primary transition-colors block">{{ _('Authentication') }}</a></li>
+                <li><a href="#endpoints" class="text-muted-foreground hover:text-primary transition-colors block">{{ _('API Endpoints') }}</a></li>
+                <li><a href="#models" class="text-muted-foreground hover:text-primary transition-colors block ml-4">{{ _('Models') }}</a></li>
+                <li><a href="#users" class="text-muted-foreground hover:text-primary transition-colors block ml-4">{{ _('Users') }}</a></li>
+                <li><a href="#examples" class="text-muted-foreground hover:text-primary transition-colors block">{{ _('Code Examples') }}</a></li>
+                <li><a href="#rate-limits" class="text-muted-foreground hover:text-primary transition-colors block">{{ _('Rate Limits') }}</a></li>
+                <li><a href="#errors" class="text-muted-foreground hover:text-primary transition-colors block">{{ _('Error Handling') }}</a></li>
             </ul>
         </div>
     </div>
 
-    <!-- 主要内容区 -->
-    <div class="api-content">
-        <!-- 概述部分 -->
-        <section id="overview" class="api-section">
-            <h2>API概述</h2>
-            <p>梦境建模系统提供RESTful API，让您能够以编程方式访问系统的功能。所有API请求都需要通过HTTPS进行，并使用JSON格式进行数据交换。</p>
+    <!-- Main Content Area -->
+    <div class="flex-1 min-w-0">
+        <!-- Overview Section -->
+        <section id="overview" class="mb-16 animate-slide-up">
+            <h1 class="text-4xl font-bold mb-6 text-gradient-dreamecho">{{ _('API Documentation') }}</h1>
+            <p class="text-lg text-muted-foreground mb-8">
+                {{ _('DreamEcho provides a RESTful API that allows you to programmatically access the system\'s functionality. All API requests require HTTPS and use JSON format for data exchange.') }}
+            </p>
             
-            <div class="api-info">
-                <div class="info-item">
-                    <h4>基础URL</h4>
-                    <code>https://api.dream-to-model.com/v1</code>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                <div class="glass p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-muted-foreground mb-1">{{ _('Base URL') }}</h4>
+                    <code class="text-primary">https://api.dreamecho.com/v1</code>
                 </div>
-                <div class="info-item">
-                    <h4>数据格式</h4>
-                    <code>application/json</code>
+                <div class="glass p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-muted-foreground mb-1">{{ _('Data Format') }}</h4>
+                    <code class="text-primary">application/json</code>
                 </div>
-                <div class="info-item">
-                    <h4>字符编码</h4>
-                    <code>UTF-8</code>
+                <div class="glass p-4 rounded-lg">
+                    <h4 class="text-sm font-medium text-muted-foreground mb-1">{{ _('Encoding') }}</h4>
+                    <code class="text-primary">UTF-8</code>
                 </div>
             </div>
         </section>
 
-        <!-- 认证部分 -->
-        <section id="authentication" class="api-section">
-            <h2>认证</h2>
-            <p>所有API请求都需要使用API密钥进行认证。您可以在设置页面生成和管理API密钥。</p>
+        <!-- Authentication Section -->
+        <section id="authentication" class="mb-16 animate-slide-up">
+            <h2 class="text-2xl font-bold mb-4 text-foreground">{{ _('Authentication') }}</h2>
+            <p class="text-muted-foreground mb-4">{{ _('All API requests require authentication using an API key. You can generate and manage API keys in your settings page.') }}</p>
             
-            <div class="code-block">
-                <div class="code-header">
-                    <span>请求头示例</span>
-                    <button class="copy-btn" onclick="copyCode('auth-header')">复制</button>
+            <div class="glass p-6 rounded-xl mb-6 overflow-hidden">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-muted-foreground">{{ _('Header Example') }}</span>
+                    <button class="text-xs text-primary hover:text-primary/80" onclick="copyCode('auth-header')">{{ _('Copy') }}</button>
                 </div>
-                <pre id="auth-header"><code>Authorization: Bearer your_api_key_here</code></pre>
+                <pre><code class="language-http" id="auth-header">Authorization: Bearer your_api_key_here</code></pre>
             </div>
 
-            <div class="api-note">
-                <h4>安全提示</h4>
-                <ul>
-                    <li>请妥善保管您的API密钥</li>
-                    <li>不要将API密钥提交到版本控制系统</li>
-                    <li>定期轮换API密钥</li>
-                    <li>使用HTTPS进行所有API请求</li>
+            <div class="bg-primary/10 border border-primary/20 p-4 rounded-lg">
+                <h4 class="font-semibold text-primary mb-2">{{ _('Security Tips') }}</h4>
+                <ul class="list-disc list-inside text-sm text-muted-foreground space-y-1">
+                    <li>{{ _('Keep your API key secure') }}</li>
+                    <li>{{ _('Do not commit API keys to version control') }}</li>
+                    <li>{{ _('Rotate your API keys periodically') }}</li>
+                    <li>{{ _('Use HTTPS for all API requests') }}</li>
                 </ul>
             </div>
         </section>
 
-        <!-- API端点部分 -->
-        <section id="endpoints" class="api-section">
-            <h2>API端点</h2>
+        <!-- Endpoints Section -->
+        <section id="endpoints" class="mb-16 animate-slide-up">
+            <h2 class="text-2xl font-bold mb-8 text-foreground">{{ _('API Endpoints') }}</h2>
             
-            <!-- 模型相关端点 -->
-            <div class="endpoint-group">
-                <h3>模型相关</h3>
+            <!-- Models Endpoints -->
+            <div id="models" class="mb-12">
+                <h3 class="text-xl font-semibold mb-6 text-foreground border-b border-border pb-2">{{ _('Models') }}</h3>
                 
-                <div class="endpoint-item">
-                    <div class="endpoint-header">
-                        <span class="method get">GET</span>
-                        <code>/models</code>
-                        <span class="description">获取模型列表</span>
+                <!-- GET /models -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded text-sm font-mono font-bold">GET</span>
+                        <code class="text-lg">/models</code>
+                        <span class="text-muted-foreground text-sm">{{ _('Get list of models') }}</span>
                     </div>
                     
-                    <div class="endpoint-details">
-                        <h4>参数</h4>
-                        <table class="params-table">
-                            <thead>
-                                <tr>
-                                    <th>参数</th>
-                                    <th>类型</th>
-                                    <th>必填</th>
-                                    <th>描述</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>page</td>
-                                    <td>integer</td>
-                                    <td>否</td>
-                                    <td>页码，默认1</td>
-                                </tr>
-                                <tr>
-                                    <td>per_page</td>
-                                    <td>integer</td>
-                                    <td>否</td>
-                                    <td>每页数量，默认20</td>
-                                </tr>
-                                <tr>
-                                    <td>category</td>
-                                    <td>string</td>
-                                    <td>否</td>
-                                    <td>模型分类</td>
-                                </tr>
-                                <tr>
-                                    <td>style</td>
-                                    <td>string</td>
-                                    <td>否</td>
-                                    <td>模型风格</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                    <div class="glass p-6 rounded-xl">
+                        <h4 class="text-sm font-semibold mb-3 text-foreground">{{ _('Parameters') }}</h4>
+                        <div class="overflow-x-auto mb-6">
+                            <table class="w-full text-sm text-left">
+                                <thead class="text-muted-foreground border-b border-border">
+                                    <tr>
+                                        <th class="py-2">{{ _('Parameter') }}</th>
+                                        <th class="py-2">{{ _('Type') }}</th>
+                                        <th class="py-2">{{ _('Required') }}</th>
+                                        <th class="py-2">{{ _('Description') }}</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-foreground">
+                                    <tr class="border-b border-border/50">
+                                        <td class="py-2 font-mono">page</td>
+                                        <td class="py-2">integer</td>
+                                        <td class="py-2">{{ _('No') }}</td>
+                                        <td class="py-2">{{ _('Page number, default 1') }}</td>
+                                    </tr>
+                                    <tr class="border-b border-border/50">
+                                        <td class="py-2 font-mono">per_page</td>
+                                        <td class="py-2">integer</td>
+                                        <td class="py-2">{{ _('No') }}</td>
+                                        <td class="py-2">{{ _('Items per page, default 20') }}</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
 
-                        <h4>响应示例</h4>
-                        <div class="code-block">
-                            <div class="code-header">
-                                <span>JSON</span>
-                                <button class="copy-btn" onclick="copyCode('models-response')">复制</button>
-                            </div>
-                            <pre id="models-response"><code>{
+                        <h4 class="text-sm font-semibold mb-3 text-foreground">{{ _('Response Example') }}</h4>
+                        <pre class="rounded-lg"><code class="language-json">{
     "data": [
         {
             "id": "model_123",
-            "title": "示例模型",
-            "description": "这是一个示例模型",
+            "title": "Example Model",
+            "description": "This is an example model",
             "category": "architecture",
             "style": "realistic",
             "created_at": "2024-03-20T10:00:00Z",
@@ -146,109 +139,56 @@
         "total_items": 200
     }
 }</code></pre>
-                        </div>
                     </div>
                 </div>
 
-                <div class="endpoint-item">
-                    <div class="endpoint-header">
-                        <span class="method post">POST</span>
-                        <code>/models</code>
-                        <span class="description">创建新模型</span>
+                <!-- POST /models -->
+                <div class="mb-8">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="px-3 py-1 bg-green-500/20 text-green-400 rounded text-sm font-mono font-bold">POST</span>
+                        <code class="text-lg">/models</code>
+                        <span class="text-muted-foreground text-sm">{{ _('Create new model') }}</span>
                     </div>
                     
-                    <div class="endpoint-details">
-                        <h4>请求体</h4>
-                        <div class="code-block">
-                            <div class="code-header">
-                                <span>JSON</span>
-                                <button class="copy-btn" onclick="copyCode('create-model')">复制</button>
-                            </div>
-                            <pre id="create-model"><code>{
-    "title": "新模型",
-    "description": "模型描述",
+                    <div class="glass p-6 rounded-xl">
+                        <h4 class="text-sm font-semibold mb-3 text-foreground">{{ _('Request Body') }}</h4>
+                        <pre class="rounded-lg mb-6"><code class="language-json">{
+    "title": "New Model",
+    "description": "Model description",
     "category": "architecture",
     "style": "realistic",
-    "dream_description": "详细的梦境描述",
+    "dream_description": "Detailed dream description",
     "options": {
         "texture": true,
         "rigging": false,
         "animation": false
     }
 }</code></pre>
-                        </div>
 
-                        <h4>响应示例</h4>
-                        <div class="code-block">
-                            <div class="code-header">
-                                <span>JSON</span>
-                                <button class="copy-btn" onclick="copyCode('create-model-response')">复制</button>
-                            </div>
-                            <pre id="create-model-response"><code>{
+                        <h4 class="text-sm font-semibold mb-3 text-foreground">{{ _('Response Example') }}</h4>
+                        <pre class="rounded-lg"><code class="language-json">{
     "id": "model_123",
-    "title": "新模型",
+    "title": "New Model",
     "status": "processing",
     "created_at": "2024-03-20T10:00:00Z"
 }</code></pre>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- 用户相关端点 -->
-            <div class="endpoint-group">
-                <h3>用户相关</h3>
-                
-                <div class="endpoint-item">
-                    <div class="endpoint-header">
-                        <span class="method get">GET</span>
-                        <code>/user/profile</code>
-                        <span class="description">获取用户信息</span>
-                    </div>
-                    
-                    <div class="endpoint-details">
-                        <h4>响应示例</h4>
-                        <div class="code-block">
-                            <div class="code-header">
-                                <span>JSON</span>
-                                <button class="copy-btn" onclick="copyCode('user-profile')">复制</button>
-                            </div>
-                            <pre id="user-profile"><code>{
-    "id": "user_123",
-    "username": "example_user",
-    "email": "user@example.com",
-    "avatar_url": "https://example.com/avatar.jpg",
-    "bio": "用户简介",
-    "created_at": "2024-01-01T00:00:00Z",
-    "stats": {
-        "models_count": 10,
-        "followers_count": 100,
-        "following_count": 50
-    }
-}</code></pre>
-                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 示例代码部分 -->
-        <section id="examples" class="api-section">
-            <h2>示例代码</h2>
+        <!-- Examples Section -->
+        <section id="examples" class="mb-16 animate-slide-up">
+            <h2 class="text-2xl font-bold mb-8 text-foreground">{{ _('Code Examples') }}</h2>
             
-            <div class="example-group">
-                <h3>Python示例</h3>
-                <div class="code-block">
-                    <div class="code-header">
-                        <span>Python</span>
-                        <button class="copy-btn" onclick="copyCode('python-example')">复制</button>
-                    </div>
-                    <pre id="python-example"><code>import requests
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4 text-foreground">Python</h3>
+                <div class="glass p-6 rounded-xl">
+                    <pre class="rounded-lg"><code class="language-python">import requests
 
 API_KEY = "your_api_key_here"
-BASE_URL = "https://api.dream-to-model.com/v1"
+BASE_URL = "https://api.dreamecho.com/v1"
 
-# 创建模型
 def create_model(title, description, category, style):
     headers = {
         "Authorization": f"Bearer {API_KEY}",
@@ -260,12 +200,7 @@ def create_model(title, description, category, style):
         "description": description,
         "category": category,
         "style": style,
-        "dream_description": "详细的梦境描述",
-        "options": {
-            "texture": True,
-            "rigging": False,
-            "animation": False
-        }
+        "dream_description": "Detailed dream description"
     }
     
     response = requests.post(
@@ -274,40 +209,16 @@ def create_model(title, description, category, style):
         json=data
     )
     
-    return response.json()
-
-# 获取模型列表
-def get_models(page=1, per_page=20):
-    headers = {
-        "Authorization": f"Bearer {API_KEY}"
-    }
-    
-    params = {
-        "page": page,
-        "per_page": per_page
-    }
-    
-    response = requests.get(
-        f"{BASE_URL}/models",
-        headers=headers,
-        params=params
-    )
-    
     return response.json()</code></pre>
                 </div>
             </div>
 
-            <div class="example-group">
-                <h3>JavaScript示例</h3>
-                <div class="code-block">
-                    <div class="code-header">
-                        <span>JavaScript</span>
-                        <button class="copy-btn" onclick="copyCode('javascript-example')">复制</button>
-                    </div>
-                    <pre id="javascript-example"><code>const API_KEY = "your_api_key_here";
-const BASE_URL = "https://api.dream-to-model.com/v1";
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold mb-4 text-foreground">JavaScript (Node.js)</h3>
+                <div class="glass p-6 rounded-xl">
+                    <pre class="rounded-lg"><code class="language-javascript">const API_KEY = "your_api_key_here";
+const BASE_URL = "https://api.dreamecho.com/v1";
 
-// 创建模型
 async function createModel(title, description, category, style) {
     const response = await fetch(`${BASE_URL}/models`, {
         method: "POST",
@@ -320,193 +231,76 @@ async function createModel(title, description, category, style) {
             description,
             category,
             style,
-            dream_description: "详细的梦境描述",
-            options: {
-                texture: true,
-                rigging: false,
-                animation: false
-            }
+            dream_description: "Detailed dream description"
         })
     });
     
     return await response.json();
-}
-
-// 获取模型列表
-async function getModels(page = 1, perPage = 20) {
-    const response = await fetch(
-        `${BASE_URL}/models?page=${page}&per_page=${perPage}`,
-        {
-            headers: {
-                "Authorization": `Bearer ${API_KEY}`
-            }
-        }
-    );
-    
-    return await response.json();
 }</code></pre>
                 </div>
             </div>
         </section>
 
-        <!-- 速率限制部分 -->
-        <section id="rate-limits" class="api-section">
-            <h2>速率限制</h2>
-            <p>API请求受到速率限制，以确保服务的稳定性和公平性。</p>
-            
-            <div class="rate-limits-table">
-                <table>
-                    <thead>
+        <!-- Rate Limits Section -->
+        <section id="rate-limits" class="mb-16 animate-slide-up">
+            <h2 class="text-2xl font-bold mb-6 text-foreground">{{ _('Rate Limits') }}</h2>
+            <div class="glass p-6 rounded-xl mb-6">
+                <table class="w-full text-sm text-left">
+                    <thead class="text-muted-foreground border-b border-border">
                         <tr>
-                            <th>端点</th>
-                            <th>限制</th>
-                            <th>说明</th>
+                            <th class="py-2">{{ _('Endpoint') }}</th>
+                            <th class="py-2">{{ _('Limit') }}</th>
+                            <th class="py-2">{{ _('Description') }}</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td>所有端点</td>
-                            <td>100次/分钟</td>
-                            <td>基础速率限制</td>
+                    <tbody class="text-foreground">
+                        <tr class="border-b border-border/50">
+                            <td class="py-2">{{ _('All Endpoints') }}</td>
+                            <td class="py-2">100 / {{ _('min') }}</td>
+                            <td class="py-2">{{ _('Basic rate limit') }}</td>
                         </tr>
-                        <tr>
-                            <td>/models (POST)</td>
-                            <td>10次/小时</td>
-                            <td>模型创建限制</td>
-                        </tr>
-                        <tr>
-                            <td>/models (GET)</td>
-                            <td>1000次/小时</td>
-                            <td>模型查询限制</td>
+                        <tr class="border-b border-border/50">
+                            <td class="py-2">/models (POST)</td>
+                            <td class="py-2">10 / {{ _('hour') }}</td>
+                            <td class="py-2">{{ _('Creation limit') }}</td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-            <div class="api-note">
-                <h4>速率限制响应</h4>
-                <p>当超过速率限制时，API将返回429状态码和以下响应：</p>
-                <div class="code-block">
-                    <div class="code-header">
-                        <span>JSON</span>
-                        <button class="copy-btn" onclick="copyCode('rate-limit-response')">复制</button>
-                    </div>
-                    <pre id="rate-limit-response"><code>{
-    "error": "rate_limit_exceeded",
-    "message": "请求过于频繁，请稍后再试",
-    "retry_after": 60
-}</code></pre>
-                </div>
-            </div>
-        </section>
-
-        <!-- 错误处理部分 -->
-        <section id="errors" class="api-section">
-            <h2>错误处理</h2>
-            <p>API使用标准的HTTP状态码和统一的错误响应格式。</p>
-            
-            <div class="error-codes">
-                <h3>常见错误码</h3>
-                <table>
-                    <thead>
-                        <tr>
-                            <th>状态码</th>
-                            <th>说明</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>400</td>
-                            <td>请求参数错误</td>
-                        </tr>
-                        <tr>
-                            <td>401</td>
-                            <td>未认证或认证失败</td>
-                        </tr>
-                        <tr>
-                            <td>403</td>
-                            <td>权限不足</td>
-                        </tr>
-                        <tr>
-                            <td>404</td>
-                            <td>资源不存在</td>
-                        </tr>
-                        <tr>
-                            <td>429</td>
-                            <td>请求过于频繁</td>
-                        </tr>
-                        <tr>
-                            <td>500</td>
-                            <td>服务器内部错误</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <div class="error-response">
-                <h3>错误响应格式</h3>
-                <div class="code-block">
-                    <div class="code-header">
-                        <span>JSON</span>
-                        <button class="copy-btn" onclick="copyCode('error-response')">复制</button>
-                    </div>
-                    <pre id="error-response"><code>{
-    "error": "error_code",
-    "message": "错误描述信息",
-    "details": {
-        "field": "具体错误字段",
-        "reason": "错误原因"
-    }
-}</code></pre>
-                </div>
             </div>
         </section>
     </div>
 </div>
 {% endblock %}
 
-{% block scripts %}
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 <script>
-/**
- * 复制代码到剪贴板
- * @param {string} elementId - 要复制的代码元素的ID
- */
-function copyCode(elementId) {
-    const codeElement = document.getElementById(elementId);
-    const code = codeElement.textContent;
-    
-    navigator.clipboard.writeText(code).then(() => {
-        // 显示复制成功提示
-        const button = codeElement.parentElement.querySelector('.copy-btn');
-        const originalText = button.textContent;
-        button.textContent = '已复制';
-        
-        setTimeout(() => {
-            button.textContent = originalText;
-        }, 2000);
-    }).catch(err => {
-        console.error('复制失败:', err);
-    });
-}
+    hljs.highlightAll();
 
-// 平滑滚动
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
+    function copyCode(elementId) {
+        const codeElement = document.getElementById(elementId);
+        const code = codeElement.textContent;
+        navigator.clipboard.writeText(code).then(() => {
+            // Optional: Show toast notification
+        });
+    }
 
-// 代码块语法高亮
-document.querySelectorAll('pre code').forEach((block) => {
-    block.classList.add('language-json');
-    hljs.highlightBlock(block);
-});
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                const headerOffset = 100;
+                const elementPosition = target.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+                window.scrollTo({
+                    top: offsetPosition,
+                    behavior: "smooth"
+                });
+            }
+        });
+    });
 </script>
-{% endblock %} 
+{% endblock %}

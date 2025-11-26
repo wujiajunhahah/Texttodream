@@ -15,17 +15,16 @@ class DreamToModelConverter:
 
         if not self.deepseek_api_key:
             if app:
-                app.logger.error("未设置DEEPSEEK_API_KEY环境变量")
-            print("错误: 未设置DEEPSEEK_API_KEY环境变量")
-            # 不强制退出，允许应用启动，但在调用时可能会失败
+                app.logger.error("DEEPSEEK_API_KEY environment variable not set")
+            print("Error: DEEPSEEK_API_KEY environment variable not set")
             
         if not self.tripo_api_key:
              if app:
-                app.logger.warning("未设置TRIPO_API_KEY环境变量，将无法生成3D模型")
-             print("警告: 未设置TRIPO_API_KEY环境变量，将无法生成3D模型")
+                app.logger.warning("TRIPO_API_KEY environment variable not set, 3D model generation will fail")
+             print("Warning: TRIPO_API_KEY environment variable not set")
 
     def test_deepseek_api(self):
-        """测试 DeepSeek API 是否可用"""
+        """Test DeepSeek API availability"""
         if not self.deepseek_api_key:
             return False
             
@@ -39,7 +38,7 @@ class DreamToModelConverter:
                 json={
                     "model": "deepseek-chat",
                     "messages": [
-                        {"role": "user", "content": "你好，这是一个测试请求，请回复 '测试成功'"}
+                        {"role": "user", "content": "Hello, this is a test request, please reply 'Test Successful'"}
                     ],
                     "temperature": 0.3
                 },
@@ -50,27 +49,28 @@ class DreamToModelConverter:
             return False
 
     @tenacity.retry(
-        wait=tenacity.wait_fixed(10),  # 每次重试等待10秒
-        stop=tenacity.stop_after_attempt(5),  # 最多重试5次
+        wait=tenacity.wait_fixed(10),
+        stop=tenacity.stop_after_attempt(5),
         retry=tenacity.retry_if_exception_type((requests.exceptions.Timeout, requests.exceptions.ConnectionError)),
         reraise=True
     )
     def extract_keywords(self, dream_text):
-        """使用DeepSeek API从梦境文本中提取关键词、象征意义和解梦"""
+        """Extract keywords, symbolism, and interpretation from dream text using DeepSeek API (in English)"""
         if not self.deepseek_api_key:
-            raise Exception("未配置 DeepSeek API Key")
+            raise Exception("DeepSeek API Key not configured")
 
         prompt = f"""
-        请分析以下梦境描述，并提取以下内容:
-        1. 5-8个最能代表这个梦境的关键词或短语
-        2. 3-5个梦境中的核心象征物或场景
-        3. 这个梦境可能传达的主要情感或感受
-        4. 一个能够视觉化表达这个梦境的简短描述(50字以内)
-        5. 对这个梦境的心理学解析(200字以内)
+        Please analyze the following dream description and extract the following content in ENGLISH:
+        1. 5-8 keywords or phrases that best represent this dream
+        2. 3-5 core symbols or scenes in the dream
+        3. The main emotions or feelings this dream might convey
+        4. A short description (within 50 words) that can visually express this dream (for 3D model generation)
+        5. A psychological interpretation of this dream (within 200 words)
 
-        请以JSON格式返回结果，包含字段: keywords, symbols, emotions, visual_description, interpretation
+        Please return the result in JSON format, including fields: keywords, symbols, emotions, visual_description, interpretation.
+        Ensure the JSON is valid.
 
-        梦境描述:
+        Dream Description:
         {dream_text}
         """
 
@@ -84,31 +84,31 @@ class DreamToModelConverter:
                 json={
                     "model": "deepseek-chat",
                     "messages": [
-                        {"role": "system", "content": "你是一个专业的梦境分析师，擅长提取梦境中的关键元素和象征意义。请直接返回JSON格式的结果，不要添加任何Markdown格式。"},
+                        {"role": "system", "content": "You are a professional dream analyst specializing in extracting key elements and symbolism from dreams. Please return the result directly in JSON format without any Markdown formatting. IMPORTANT: All output must be in English."},
                         {"role": "user", "content": prompt}
                     ],
                     "temperature": 0.3
                 },
-                timeout=90  # 增加超时时间至90秒
+                timeout=90
             )
 
             if response.status_code != 200:
-                raise Exception(f"DeepSeek API 调用失败，状态码: {response.status_code}")
+                raise Exception(f"DeepSeek API call failed, status code: {response.status_code}")
 
             result = response.json()
             content = result["choices"][0]["message"]["content"]
 
-            # 从Markdown中提取JSON
+            # Extract JSON from Markdown
             json_content = self.extract_json_from_markdown(content)
 
-            # 手动解析 JSON，确保兼容性
+            # Manually parse JSON
             analysis = json.loads(json_content)
 
-            # 验证返回字段
+            # Validate returned fields
             required_fields = ["keywords", "symbols", "emotions", "visual_description", "interpretation"]
             for field in required_fields:
                 if field not in analysis:
-                    raise Exception(f"DeepSeek API 返回缺少字段: {field}")
+                    raise Exception(f"DeepSeek API returned missing field: {field}")
 
             return analysis
 
@@ -118,7 +118,7 @@ class DreamToModelConverter:
             raise
 
     def extract_json_from_markdown(self, text):
-        """从Markdown文本中提取JSON"""
+        """Extract JSON from Markdown text"""
         import re
         json_match = re.search(r'```(?:json)?\s*([\s\S]*?)\s*```', text)
 
@@ -131,19 +131,19 @@ class DreamToModelConverter:
             return cleaned_text
 
     def generate_model_prompt(self, analysis):
-        """根据分析结果生成3D模型提示词"""
+        """Generate 3D model prompt based on analysis results"""
         symbols = ", ".join(analysis["symbols"])
         emotions = ", ".join(analysis["emotions"])
-        model_prompt = f"{analysis['visual_description']} 包含 {symbols}. 整体氛围: {emotions}"
+        model_prompt = f"{analysis['visual_description']} featuring {symbols}. Overall atmosphere: {emotions}"
         return model_prompt
 
     def generate_3d_model(self, model_prompt):
-        """使用Tripo API生成3D模型"""
+        """Generate 3D model using Tripo API"""
         if not self.tripo_api_key:
-             raise Exception("未配置 Tripo API Key")
+             raise Exception("Tripo API Key not configured")
 
         try:
-            # 创建任务
+            # Create task
             response = requests.post(
                 "https://api.tripo3d.ai/v2/openapi/task",
                 headers={
@@ -165,7 +165,7 @@ class DreamToModelConverter:
             if not task_id:
                 return None
 
-            # 轮询任务状态
+            # Poll task status
             model_url = None
             max_attempts = 60
             for attempt in range(max_attempts):
@@ -208,74 +208,68 @@ class DreamToModelConverter:
 
     def process_dream(self, dream_text, user_id, dream_id=None, update_progress_callback=None):
         """
-        处理梦境并生成3D模型
+        Process dream and generate 3D model
         update_progress_callback: function(dream_id, stage, progress, remaining_minutes, status)
         """
         try:
             if self.app:
-                self.app.logger.info(f'开始处理用户 {user_id} 的梦境')
+                self.app.logger.info(f'Starting dream processing for user {user_id}')
             
-            # 如果提供了dream_id，则初始化进度跟踪
             if dream_id and update_progress_callback:
-                update_progress_callback(dream_id, "开始", 5, 20, "正在启动梦境处理...")
+                update_progress_callback(dream_id, "Start", 5, 20, "Starting dream processing...")
             
-            # 测试 DeepSeek API 可用性
             if not self.test_deepseek_api():
                 if self.app:
-                    self.app.logger.error('DeepSeek API 不可用')
+                    self.app.logger.error('DeepSeek API unavailable')
                 if dream_id and update_progress_callback:
-                    update_progress_callback(dream_id, "失败", 0, 0, "API服务暂时不可用，请稍后再试")
-                raise Exception("DeepSeek API 服务暂时不可用，请稍后再试")
+                    update_progress_callback(dream_id, "Failed", 0, 0, "API service temporarily unavailable, please try again later")
+                raise Exception("DeepSeek API service temporarily unavailable")
 
-            # 提取关键词和分析
             if self.app:
-                self.app.logger.info('开始提取关键词和分析')
+                self.app.logger.info('Extracting keywords and analysis')
             if dream_id and update_progress_callback:
-                update_progress_callback(dream_id, "分析梦境", 20, 15, "正在提取关键词和进行梦境分析...")
+                update_progress_callback(dream_id, "Analyze Dream", 20, 15, "Extracting keywords and analyzing dream...")
             
             analysis = self.extract_keywords(dream_text)
             
-            # 生成3D模型
             if self.app:
-                self.app.logger.info('开始生成3D模型')
+                self.app.logger.info('Generating 3D model')
             if dream_id and update_progress_callback:
-                update_progress_callback(dream_id, "生成模型", 40, 10, "正在生成3D模型...")
+                update_progress_callback(dream_id, "Generate Model", 40, 10, "Generating 3D model...")
             
             model_prompt = self.generate_model_prompt(analysis)
             model_url = self.generate_3d_model(model_prompt)
             
             if not model_url:
                 if self.app:
-                    self.app.logger.error('3D模型生成失败')
+                    self.app.logger.error('3D model generation failed')
                 if dream_id and update_progress_callback:
-                    update_progress_callback(dream_id, "失败", 0, 0, "3D模型生成失败，请稍后重试")
-                raise Exception("3D模型生成失败，请稍后重试")
+                    update_progress_callback(dream_id, "Failed", 0, 0, "3D model generation failed, please retry later")
+                raise Exception("3D model generation failed")
 
-            # 创建用户目录
+            # Create user directory
             user_dir = os.path.join('static', 'models', f'user_{user_id}')
             os.makedirs(user_dir, exist_ok=True)
             
-            # 下载模型文件
             if self.app:
-                self.app.logger.info('下载模型文件')
+                self.app.logger.info('Downloading model file')
             if dream_id and update_progress_callback:
-                update_progress_callback(dream_id, "下载模型", 60, 5, "正在下载生成的模型文件...")
+                update_progress_callback(dream_id, "Download Model", 60, 5, "Downloading generated model file...")
             
             model_filename = f"dream_{int(time.time())}.glb"
             model_path = os.path.join(user_dir, model_filename)
             
-            # 下载文件
             response = requests.get(model_url, stream=True)
             if response.status_code != 200:
                 if dream_id and update_progress_callback:
-                    update_progress_callback(dream_id, "失败", 0, 0, "下载模型文件失败")
-                raise Exception("下载模型文件失败")
+                    update_progress_callback(dream_id, "Failed", 0, 0, "Failed to download model file")
+                raise Exception("Failed to download model file")
             
             total_size = int(response.headers.get('content-length', 0))
             block_size = 1024
             
             with open(model_path, 'wb') as f, tqdm(
-                desc="下载模型",
+                desc="Downloading Model",
                 total=total_size,
                 unit='iB',
                 unit_scale=True,
@@ -285,14 +279,11 @@ class DreamToModelConverter:
                     size = f.write(data)
                     pbar.update(size)
             
-            # 优化模型处理
             if dream_id and update_progress_callback:
-                update_progress_callback(dream_id, "优化处理", 80, 3, "正在优化模型和处理资源...")
+                update_progress_callback(dream_id, "Optimizing", 80, 3, "Optimizing model and processing resources...")
             
-            # 构建相对路径
             relative_model_path = os.path.join('models', f'user_{user_id}', model_filename)
             
-            # 返回结果字典
             result = {
                 'model_path': relative_model_path,
                 'keywords': json.dumps(analysis['keywords']),
@@ -303,14 +294,12 @@ class DreamToModelConverter:
             }
             
             if self.app:
-                self.app.logger.info(f'梦境处理完成，模型路径: {relative_model_path}')
+                self.app.logger.info(f'Dream processing complete, model path: {relative_model_path}')
             return result
             
         except Exception as e:
             if self.app:
-                self.app.logger.error(f'处理梦境时发生错误: {str(e)}')
-            # 更新失败状态
+                self.app.logger.error(f'Error processing dream: {str(e)}')
             if dream_id and update_progress_callback:
-                update_progress_callback(dream_id, "失败", 0, 0, f"处理失败: {str(e)}")
+                update_progress_callback(dream_id, "Failed", 0, 0, f"Processing failed: {str(e)}")
             raise
-
