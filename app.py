@@ -162,7 +162,7 @@ def model_detail(model_id):
         'id': dream.id,
         'title': dream.title,
         'description': dream.description,
-        'creator': "Anonymous Dreamer",
+        'creator': "Dreamer",
         'creation_date': dream.created_at.strftime('%Y-%m-%d %H:%M'),
         'tags': dream.tags.split(',') if dream.tags else [],
         'status': dream.status,
