@@ -4,6 +4,9 @@
 
 **DreamEcho** is an innovative AI-driven platform dedicated to transforming people's dream creativity into exquisite 3D models, featuring support for NFT trading.
 
+🔗 **Live Demo / Project Page**: [https://wujiajunhahah.github.io/Texttodream/](https://wujiajunhahah.github.io/Texttodream/)
+📦 **GitHub Repository**: [https://github.com/wujiajunhahah/Texttodream](https://github.com/wujiajunhahah/Texttodream)
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
 [![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)](https://flask.palletsprojects.com/)
@@ -79,6 +82,7 @@ Texttodream/
 │   └── models/         # Generated 3D Models
 ├── templates/          # HTML Templates (Modern & Responsive)
 ├── translations/       # i18n Translation Files
+├── docs/               # Project Documentation & Landing Page
 └── logs/               # Application Logs
 ```
 
