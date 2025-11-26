@@ -28,3 +28,6 @@ logs/
 # User generated content
 static/models/user_*
 !static/models/.gitkeep
+
+# Legacy / Backup
+legacy_backup/
