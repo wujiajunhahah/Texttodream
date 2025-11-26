@@ -1,89 +1,124 @@
-# DreamEcho - 梦境转3D模型平台
+# DreamEcho - Transform Dreams into 3D Art
 
-![DreamEcho Logo](/static/images/dreamecho_logo.png)
+![DreamEcho Banner](static/images/dreamecho_logo.png)
 
-DreamEcho是一个创新的AI驱动平台，致力于将人们的梦境创意转化为精美的3D模型，并支持NFT交易。
+**DreamEcho** is an innovative AI-driven platform dedicated to transforming people's dream creativity into exquisite 3D models, featuring support for NFT trading.
 
-## ✨ 特色功能
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Python](https://img.shields.io/badge/Python-3.8%2B-blue)](https://www.python.org/)
+[![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)](https://flask.palletsprojects.com/)
 
-- 🎨 梦境转3D模型：通过AI技术将文字描述转换为精确的3D模型
-- 💎 NFT交易市场：支持模型NFT化并在多链上交易
-- 🌈 沉浸式体验：独特的粒子动画背景和现代化UI设计
-- 📱 响应式设计：完美支持各种设备的显示
+## ✨ Features
 
-## 🛠 技术栈
+- **🎨 Dream to 3D**: Transform text descriptions into precise 3D models using advanced AI technology (DeepSeek & Tripo3D).
+- **💎 NFT Marketplace**: Support for minting models as NFTs and trading on multiple blockchains (Ethereum, Polygon, BSC).
+- **🌍 Internationalization**: Built-in support for English and Chinese (Simplified) with easy switching.
+- **🌈 Immersive Experience**: Unique particle animation backgrounds and a modern, dark-themed UI.
+- **📱 Responsive Design**: Perfectly optimized for various devices, from desktop to mobile.
 
-- 前端：HTML5, CSS3, JavaScript (Particles.js, Three.js)
-- 后端：Python Flask
-- 数据库：SQLite
-- AI集成：Deep Seek API, TripoAPI
-- 区块链：支持Ethereum, Polygon, BSC
+## 🛠 Tech Stack
 
-## 🚀 快速开始
+- **Frontend**: HTML5, CSS3 (Tailwind CSS), JavaScript (Particles.js, Three.js)
+- **Backend**: Python Flask
+- **Database**: SQLite (Development) / SQLAlchemy ORM
+- **AI Integration**: DeepSeek API (Analysis), Tripo API (3D Generation)
+- **Blockchain**: Simulated integration for Ethereum, Polygon, BSC
 
-1. 克隆仓库
-```bash
-git clone https://github.com/wujiajunhahah/Dream-To-Model-Web.git
-cd Dream-To-Model-Web
+## 🚀 Quick Start
+
+### Prerequisites
+
+- Python 3.8+
+- pip
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/wujiajunhahah/Texttodream.git
+   cd Texttodream
+   ```
+
+2. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+3. **Configuration**
+   Copy the example environment file and configure your API keys.
+   ```bash
+   cp .env.example .env
+   ```
+   Edit `.env` and add your API keys:
+   ```ini
+   DEEPSEEK_API_KEY=your_key_here
+   TRIPO_API_KEY=your_key_here
+   SECRET_KEY=your_secure_secret_key
+   ```
+
+4. **Run the application**
+   ```bash
+   python app.py
+   ```
+
+5. **Visit the website**
+   Open your browser and navigate to `http://localhost:5001`
+
+## 📦 Project Structure
+
+```
+Texttodream/
+├── app.py              # Main Flask Application
+├── config.py           # Configuration
+├── services.py         # AI Service Integration (DeepSeek & Tripo)
+├── requirements.txt    # Dependencies
+├── static/             # Static Assets
+│   ├── css/
+│   ├── js/
+│   ├── images/
+│   └── models/         # Generated 3D Models
+├── templates/          # HTML Templates (Modern & Responsive)
+├── translations/       # i18n Translation Files
+└── logs/               # Application Logs
 ```
 
-2. 安装依赖
-```bash
-pip install -r requirements.txt
-```
+## 🔑 Environment Variables
 
-3. 启动应用
-```bash
-python app.py
-```
+Ensure your `.env` file contains the following keys for full functionality:
 
-4. 访问网站
-```
-http://localhost:5001
-```
+| Variable | Description |
+|----------|-------------|
+| `FLASK_APP` | Set to `app.py` |
+| `FLASK_ENV` | `development` or `production` |
+| `SECRET_KEY` | Flask session security key |
+| `DEEPSEEK_API_KEY` | API key for dream text analysis |
+| `TRIPO_API_KEY` | API key for 3D model generation |
 
-## 📦 项目结构
+## 📄 API Documentation
 
-```
-Dream-To-Model-Web/
-├── app.py              # Flask应用主文件
-├── models.py           # 数据模型定义
-├── requirements.txt    # 项目依赖
-├── static/            
-│   ├── css/           # 样式文件
-│   ├── js/            # JavaScript文件
-│   ├── images/        # 图片资源
-│   └── models/        # 3D模型文件
-├── templates/          # HTML模板
-└── docs/              # 项目文档
-```
+This project includes a comprehensive API documentation page accessible at `/api_docs` after starting the server. It covers endpoints for user management, dream creation, and model retrieval.
 
-## 🔑 环境变量配置
+## 🤝 Contributing
 
-创建`.env`文件并配置以下环境变量：
-```
-FLASK_SECRET_KEY=your_secret_key
-DEEP_SEEK_API_KEY=your_deep_seek_api_key
-TRIPO_API_KEY=your_tripo_api_key
-```
+Contributions are welcome! Please feel free to submit a Pull Request.
 
-## 📄 API文档
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
-详细的API文档请参考 `docs/technical_docs.md`
+## 📝 License
 
-## 🤝 贡献指南
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-1. Fork 项目
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 开启Pull Request
+## 👤 Author
 
-## 📝 开源协议
+**Jiajun Wu**
 
-本项目采用 MIT 协议 - 详情请参见 [LICENSE](LICENSE) 文件
+- Website: [https://www.wujiajun.space](https://www.wujiajun.space)
+- Email: epwujiajun@icloud.com
+- GitHub: [@wujiajunhahah](https://github.com/wujiajunhahah)
 
-## 👥 联系我们
-
-- 技术支持：support@dreamecho.ai
-- GitHub：[https://github.com/wujiajunhahah](https://github.com/wujiajunhahah) 
+---
+*Note: This project is a demonstration of AI-driven creative tools and is open for educational and development purposes.*
