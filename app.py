@@ -4,8 +4,12 @@
 import os
 import logging
 from datetime import datetime
+from dotenv import load_dotenv
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify, make_response, session
 from flask_sqlalchemy import SQLAlchemy
+
+# Load environment variables
+load_dotenv()
 # Removed Flask-Login imports to simplify
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
