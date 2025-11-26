@@ -60,6 +60,9 @@ class Dream(db.Model):
     
     # Dream attributes
     status = db.Column(db.String(20), default='completed')
+    progress = db.Column(db.Integer, default=0)
+    current_stage = db.Column(db.String(100), default='')
+    estimated_time = db.Column(db.Integer, default=0) # in seconds
     
     # AI generated fields
     dream_text = db.Column(db.Text, nullable=True)
@@ -102,7 +105,10 @@ def index():
             title=dream_title or "Untitled Dream",
             description=dream_description,
             dream_text=dream_description,
-            status='processing'
+            status='processing',
+            progress=0,
+            current_stage=_('Initializing...'),
+            estimated_time=120 # Initial estimate 2 mins
         )
         
         db.session.add(new_model)
@@ -112,15 +118,28 @@ def index():
         import threading
         from services import DreamToModelConverter
         
+        def update_progress(dream_id, stage, progress, remaining_minutes, status_text):
+            with app.app_context():
+                try:
+                    dream = Dream.query.get(dream_id)
+                    if dream:
+                        dream.current_stage = status_text
+                        dream.progress = progress
+                        dream.estimated_time = remaining_minutes * 60
+                        db.session.commit()
+                except Exception as e:
+                    print(f"Error updating progress: {e}")
+
         def process_dream_async(description, dream_id):
              with app.app_context():
                 try:
                     converter = DreamToModelConverter(app=app)
-                    # Real processing
+                    # Real processing with callback
                     result = converter.process_dream(
                         dream_text=description, 
                         user_id=0, # Anonymous
-                        dream_id=dream_id
+                        dream_id=dream_id,
+                        update_progress_callback=update_progress
                     )
                     
                     if result and 'model_path' in result:
@@ -132,12 +151,15 @@ def index():
                         dream.visual_description = result.get('visual_description', '')
                         dream.interpretation = result.get('interpretation', '')
                         dream.status = 'complete'
+                        dream.progress = 100
+                        dream.current_stage = _('Completed')
                         db.session.commit()
                 except Exception as e:
                     print(f"Error processing dream: {e}")
                     try:
                         dream = Dream.query.get(dream_id)
                         dream.status = 'failed'
+                        dream.current_stage = f"Error: {str(e)}"
                         db.session.commit()
                     except:
                         pass
@@ -153,10 +175,14 @@ def index():
 def model_detail(model_id):
     dream = Dream.query.get_or_404(model_id)
     
-    # Auto-refresh if processing
-    if dream.status == 'processing':
-        flash(_('Dream is being analyzed... page will refresh.'), 'info')
-        # Could add meta refresh in template or JS polling
+    # Check status for polling
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify({
+            'status': dream.status,
+            'progress': dream.progress,
+            'stage': dream.current_stage,
+            'estimated_time': dream.estimated_time
+        })
     
     model_data = {
         'id': dream.id,
@@ -166,6 +192,8 @@ def model_detail(model_id):
         'creation_date': dream.created_at.strftime('%Y-%m-%d %H:%M'),
         'tags': dream.tags.split(',') if dream.tags else [],
         'status': dream.status,
+        'progress': dream.progress,
+        'current_stage': dream.current_stage,
         'model_path': url_for('static', filename=dream.model_file) if dream.model_file else '',
         'interpretation': {
             'keywords': dream.keywords,
@@ -176,6 +204,15 @@ def model_detail(model_id):
         }
     }
     return render_template('model_detail.html', model=model_data)
+
+@app.route('/api/status/<model_id>')
+def check_status(model_id):
+    dream = Dream.query.get_or_404(model_id)
+    return jsonify({
+        'status': dream.status,
+        'progress': dream.progress,
+        'stage': dream.current_stage
+    })
 
 # Removed Login/Register/Profile routes
 

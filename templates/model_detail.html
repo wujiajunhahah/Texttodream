@@ -4,6 +4,74 @@
 
 {% block content %}
 <div class="container mx-auto px-4 py-8 max-w-6xl">
+    
+    <!-- Processing State Overlay -->
+    {% if model.status == 'processing' %}
+    <div id="processing-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center">
+        <div class="text-center max-w-md w-full p-8 glass rounded-2xl border border-primary/30">
+            <div class="relative w-24 h-24 mx-auto mb-8">
+                <div class="absolute inset-0 border-4 border-primary/20 rounded-full"></div>
+                <div class="absolute inset-0 border-4 border-primary rounded-full border-t-transparent animate-spin"></div>
+                <div class="absolute inset-0 flex items-center justify-center font-mono text-xl text-primary">
+                    <span id="progress-percent">{{ model.progress }}</span>%
+                </div>
+            </div>
+            
+            <h2 class="text-2xl font-bold mb-2 text-white">{{ _('Dream Realization in Progress') }}</h2>
+            <p id="current-stage" class="text-primary mb-6 text-lg font-medium">{{ model.current_stage }}</p>
+            
+            <div class="space-y-4 text-left bg-black/40 p-6 rounded-xl">
+                <div class="flex items-center space-x-3 text-sm">
+                    <div class="w-2 h-2 rounded-full bg-primary"></div>
+                    <span class="text-gray-300">{{ _('Analyzing Dream Semantics') }}</span>
+                </div>
+                <div class="flex items-center space-x-3 text-sm">
+                    <div class="w-2 h-2 rounded-full {% if model.progress > 30 %}bg-primary{% else %}bg-gray-600{% endif %}"></div>
+                    <span class="text-gray-300">{{ _('Generating Visual Description') }}</span>
+                </div>
+                <div class="flex items-center space-x-3 text-sm">
+                    <div class="w-2 h-2 rounded-full {% if model.progress > 50 %}bg-primary{% else %}bg-gray-600{% endif %}"></div>
+                    <span class="text-gray-300">{{ _('Constructing 3D Geometry') }}</span>
+                </div>
+                <div class="flex items-center space-x-3 text-sm">
+                    <div class="w-2 h-2 rounded-full {% if model.progress > 80 %}bg-primary{% else %}bg-gray-600{% endif %}"></div>
+                    <span class="text-gray-300">{{ _('Optimizing Model Assets') }}</span>
+                </div>
+            </div>
+            
+            <p class="mt-6 text-xs text-gray-500">
+                {{ _('Estimated time remaining:') }} <span class="font-mono text-primary">~2 min</span>
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Polling for status updates
+        const modelId = "{{ model.id }}";
+        const checkStatus = setInterval(() => {
+            fetch(`/model/${modelId}`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Update UI
+                document.getElementById('progress-percent').textContent = data.progress;
+                document.getElementById('current-stage').textContent = data.stage;
+                
+                if (data.status === 'complete') {
+                    clearInterval(checkStatus);
+                    window.location.reload();
+                } else if (data.status === 'failed') {
+                    clearInterval(checkStatus);
+                    alert('Generation failed: ' + data.stage);
+                    window.location.href = '/';
+                }
+            })
+            .catch(err => console.error('Polling error:', err));
+        }, 2000);
+    </script>
+    {% endif %}
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         <!-- Left Column: 3D Model & Main Info (Dark Card) -->
@@ -26,7 +94,10 @@
                     </model-viewer>
                     {% else %}
                     <div class="flex items-center justify-center h-full text-white/50">
-                        <p>{{ _('3D Model Processing...') }}</p>
+                        <div class="text-center">
+                            <p class="mb-2">{{ _('Waiting for generation...') }}</p>
+                            <p class="text-xs text-gray-500">{{ _('This process takes about 2-3 minutes') }}</p>
+                        </div>
                     </div>
                     {% endif %}
                     
@@ -59,7 +130,7 @@
                     <div>
                         <h3 class="text-sm font-bold text-white mb-2">{{ _('Dream analysis') }}</h3>
                         <p class="text-gray-400 text-xs leading-relaxed">
-                            {{ model.interpretation.psychology or _('AI analysis in progress...') }}
+                            {{ model.interpretation.psychology or _('AI analysis pending...') }}
                         </p>
                     </div>
                 </div>
@@ -89,7 +160,7 @@
                             <p>{{ kw.strip() }}</p>
                             {% endfor %}
                         {% else %}
-                            <p>Processing...</p>
+                            <p class="text-gray-400">{{ _('Analyzing...') }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -101,7 +172,7 @@
                             <p>{{ sym.strip() }}</p>
                             {% endfor %}
                         {% else %}
-                            <p>Processing...</p>
+                            <p class="text-gray-400">{{ _('Analyzing...') }}</p>
                         {% endif %}
                     </div>
                 </div>
@@ -113,7 +184,7 @@
                             <p>{{ emo.strip() }}</p>
                             {% endfor %}
                         {% else %}
-                            <p>Processing...</p>
+                            <p class="text-gray-400">{{ _('Analyzing...') }}</p>
                         {% endif %}
                     </div>
                 </div>
