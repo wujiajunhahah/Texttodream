@@ -30,37 +30,17 @@
                         muted: 'hsl(137 40% 20%)',
                         'muted-foreground': 'hsl(81 50% 70%)',
                         accent: 'hsl(137 40% 30%)',
-                        'accent-foreground': 'hsl(81 80% 95%)',
-                        border: 'hsl(137 40% 25%)',
-                        input: 'hsl(137 40% 25%)',
-                        ring: 'hsl(81 70% 60%)',
                         'dreamecho-accent': 'hsl(81 80% 70%)',
                     },
                     animation: {
                         'fade-in': 'fadeIn 0.5s ease-in-out',
                         'slide-up': 'slideUp 0.5s ease-out',
-                        'marquee': 'marquee 40s linear infinite',
-                    },
-                    keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(20px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' }
-                        },
-                        marquee: {
-                            '0%': { transform: 'translateX(0%)' },
-                            '100%': { transform: 'translateX(-100%)' }
-                        }
                     }
                 }
             }
         }
     </script>
     
-    <!-- Custom Styles -->
     <style>
         .glass {
             background: rgba(0, 0, 0, 0.3);
@@ -68,75 +48,37 @@
             border: 1px solid rgba(129, 140, 248, 0.2);
             border-radius: 0.75rem;
         }
-        
-        .glass-hover {
-            transition: all 0.3s ease;
-        }
-        
-        .glass-hover:hover {
-            background: rgba(0, 0, 0, 0.4);
-            border-color: rgba(129, 140, 248, 0.4);
-        }
-        
         .text-gradient-dreamecho {
             background: linear-gradient(to right, hsl(81 70% 60%), hsl(81 80% 70%));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-        
         .button-gradient-dreamecho {
             background: linear-gradient(to right, hsl(81 70% 60%), hsl(81 80% 70%));
             transition: opacity 0.3s ease;
         }
-        
-        .button-gradient-dreamecho:hover {
-            opacity: 0.9;
-        }
-        
-        .particle-bg {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            pointer-events: none;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: hsl(137 47% 15%);
-            color: hsl(81 80% 85%);
-        }
+        .button-gradient-dreamecho:hover { opacity: 0.9; }
     </style>
-    
-    {% block extra_css %}{% endblock %}
 </head>
 <body class="min-h-screen bg-background text-foreground font-inter antialiased">
     <!-- Particle Background -->
-    <canvas id="particle-canvas" class="particle-bg"></canvas>
+    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full -z-10 pointer-events-none"></canvas>
     
-    <!-- Navigation -->
     <nav class="fixed top-0 left-0 right-0 z-50 glass">
         <div class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <!-- Logo -->
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 bg-gradient-to-r from-primary to-dreamecho-accent rounded-lg flex items-center justify-center">
-                        <span class="text-primary-foreground font-bold text-sm">DE</span>
-                    </div>
-                    <span class="text-xl font-semibold text-gradient-dreamecho">DreamEcho</span>
+                    <a href="{{ url_for('index') }}" class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-r from-primary to-dreamecho-accent rounded-lg flex items-center justify-center">
+                            <span class="text-primary-foreground font-bold text-sm">DE</span>
+                        </div>
+                        <span class="text-xl font-semibold text-gradient-dreamecho">DreamEcho</span>
+                    </a>
                 </div>
                 
-                <!-- Desktop Navigation -->
-                <div class="hidden md:flex items-center space-x-8">
-                    <a href="{{ url_for('index') }}" class="text-foreground hover:text-primary transition-colors">{{ _('Home') }}</a>
-                    <a href="{{ url_for('create_dream') }}" class="text-foreground hover:text-primary transition-colors">{{ _('Create Dream') }}</a>
-                    <a href="{{ url_for('model_library') }}" class="text-foreground hover:text-primary transition-colors">{{ _('Model Library') }}</a>
-                    <a href="{{ url_for('api_docs') }}" class="text-foreground hover:text-primary transition-colors">{{ _('API Docs') }}</a>
-                    <a href="{{ url_for('about') }}" class="text-foreground hover:text-primary transition-colors">{{ _('About') }}</a>
-                    
+                <!-- Simple Navigation -->
+                <div class="flex items-center space-x-6">
                     <!-- Language Switcher -->
                     <div class="relative group">
                         <button class="flex items-center space-x-1 text-foreground hover:text-primary transition-colors">
@@ -150,55 +92,18 @@
                             <a href="{{ url_for('set_language', language='zh') }}" class="block px-4 py-2 text-sm text-foreground hover:bg-primary/10 rounded">中文</a>
                         </div>
                     </div>
-
-                    {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('profile') }}" class="text-foreground hover:text-primary transition-colors">{{ _('Profile') }}</a>
-                        <a href="{{ url_for('logout') }}" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-full hover:bg-accent transition-colors">{{ _('Logout') }}</a>
-                    {% else %}
-                        <a href="{{ url_for('login') }}" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-full hover:bg-accent transition-colors">{{ _('Login') }}</a>
-                        <a href="{{ url_for('register') }}" class="px-4 py-2 button-gradient-dreamecho text-primary-foreground rounded-full">{{ _('Register') }}</a>
-                    {% endif %}
-                </div>
-                
-                <!-- Mobile Menu Button -->
-                <button id="mobile-menu-btn" class="md:hidden p-2 text-foreground">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                    </svg>
-                </button>
-            </div>
-            
-            <!-- Mobile Navigation -->
-            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-border">
-                <div class="flex flex-col space-y-4 pt-4">
-                    <a href="{{ url_for('index') }}" class="text-foreground hover:text-primary transition-colors">{{ _('Home') }}</a>
-                    <a href="{{ url_for('create_dream') }}" class="text-foreground hover:text-primary transition-colors">{{ _('Create Dream') }}</a>
-                    <a href="{{ url_for('model_library') }}" class="text-foreground hover:text-primary transition-colors">{{ _('Model Library') }}</a>
-                    <a href="{{ url_for('api_docs') }}" class="text-foreground hover:text-primary transition-colors">{{ _('API Docs') }}</a>
-                    <a href="{{ url_for('about') }}" class="text-foreground hover:text-primary transition-colors">{{ _('About') }}</a>
-                    <div class="flex space-x-4">
-                        <a href="{{ url_for('set_language', language='en') }}" class="text-foreground hover:text-primary">EN</a>
-                        <a href="{{ url_for('set_language', language='zh') }}" class="text-foreground hover:text-primary">中文</a>
-                    </div>
-                    {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('profile') }}" class="text-foreground hover:text-primary transition-colors">{{ _('Profile') }}</a>
-                        <a href="{{ url_for('logout') }}" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-full hover:bg-accent transition-colors text-center">{{ _('Logout') }}</a>
-                    {% else %}
-                        <a href="{{ url_for('login') }}" class="px-4 py-2 bg-secondary text-secondary-foreground rounded-full hover:bg-accent transition-colors text-center">{{ _('Login') }}</a>
-                        <a href="{{ url_for('register') }}" class="px-4 py-2 button-gradient-dreamecho text-primary-foreground rounded-full text-center">{{ _('Register') }}</a>
-                    {% endif %}
                 </div>
             </div>
         </div>
     </nav>
     
     <!-- Main Content -->
-    <main class="pt-20">
+    <main class="pt-20 min-h-screen flex flex-col">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 <div class="container mx-auto px-4 py-4">
                     {% for category, message in messages %}
-                        <div class="glass p-4 mb-4 rounded-lg {% if category == 'error' %}border-red-500{% else %}border-primary{% endif %}">
+                        <div class="glass p-4 mb-4 rounded-lg {% if category == 'error' %}border-red-500 text-red-300{% else %}border-primary text-primary{% endif %}">
                             <p class="text-sm">{{ message }}</p>
                         </div>
                     {% endfor %}
@@ -207,61 +112,14 @@
         {% endwith %}
         
         {% block content %}{% endblock %}
+        
+        <footer class="mt-auto py-8 text-center text-muted-foreground text-sm border-t border-white/5">
+            <p>&copy; 2024 DreamEcho. {{ _('All rights reserved.') }}</p>
+        </footer>
     </main>
-    
-    <!-- Footer -->
-    <footer class="bg-background border-t border-border mt-20">
-        <div class="container mx-auto px-4 py-12">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                <div class="space-y-4">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-8 h-8 bg-gradient-to-r from-primary to-dreamecho-accent rounded-lg flex items-center justify-center">
-                            <span class="text-primary-foreground font-bold text-sm">DE</span>
-                        </div>
-                        <span class="text-xl font-semibold text-gradient-dreamecho">DreamEcho</span>
-                    </div>
-                    <p class="text-muted-foreground">{{ _('Transform your dreams into unique 3D artworks') }}</p>
-                </div>
-                
-                <div class="space-y-4">
-                    <h3 class="font-semibold text-foreground">{{ _('Product') }}</h3>
-                    <div class="space-y-2">
-                        <a href="{{ url_for('create_dream') }}" class="block text-muted-foreground hover:text-primary transition-colors">{{ _('Create Dream') }}</a>
-                        <a href="{{ url_for('model_library') }}" class="block text-muted-foreground hover:text-primary transition-colors">{{ _('Model Library') }}</a>
-                    </div>
-                </div>
-                
-                <div class="space-y-4">
-                    <h3 class="font-semibold text-foreground">{{ _('Company') }}</h3>
-                    <div class="space-y-2">
-                        <a href="{{ url_for('about') }}" class="block text-muted-foreground hover:text-primary transition-colors">{{ _('About Us') }}</a>
-                        <a href="#" class="block text-muted-foreground hover:text-primary transition-colors">{{ _('Contact') }}</a>
-                    </div>
-                </div>
-                
-                <div class="space-y-4">
-                    <h3 class="font-semibold text-foreground">{{ _('Support') }}</h3>
-                    <div class="space-y-2">
-                        <a href="{{ url_for('api_docs') }}" class="block text-muted-foreground hover:text-primary transition-colors">{{ _('API Docs') }}</a>
-                        <a href="#" class="block text-muted-foreground hover:text-primary transition-colors">{{ _('Privacy Policy') }}</a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="border-t border-border mt-8 pt-8 text-center">
-                <p class="text-muted-foreground">&copy; 2024 DreamEcho. {{ _('All rights reserved.') }}</p>
-            </div>
-        </div>
-    </footer>
     
     <!-- Scripts -->
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-btn').addEventListener('click', function() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        });
-        
         // Particle animation
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
@@ -270,16 +128,16 @@
         canvas.height = window.innerHeight;
         
         const particles = [];
-        const particleCount = 50;
+        const particleCount = 30; // Reduced count for subtler effect
         
         class Particle {
             constructor() {
                 this.x = Math.random() * canvas.width;
                 this.y = Math.random() * canvas.height;
-                this.vx = (Math.random() - 0.5) * 0.5;
-                this.vy = (Math.random() - 0.5) * 0.5;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
                 this.size = Math.random() * 2 + 1;
-                this.opacity = Math.random() * 0.5 + 0.2;
+                this.opacity = Math.random() * 0.3 + 0.1;
             }
             
             update() {
