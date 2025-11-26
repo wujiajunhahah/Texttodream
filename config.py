@@ -23,8 +23,8 @@ class Config:
     MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD')
     
     # API密钥
-    DEEPSEEK_API_KEY = "sk-586e842eecfc45ba92eeceebed9b76dd"
-    TRIPO_API_KEY = "tsk_Ep2Vvovn4vAMITNVEjFjOacWy3jfuQtwIzJWV5lsS2T"
+    DEEPSEEK_API_KEY = os.getenv('DEEPSEEK_API_KEY')
+    TRIPO_API_KEY = os.getenv('TRIPO_API_KEY')
     
     # 会话配置
     SESSION_COOKIE_SECURE = os.getenv('SESSION_COOKIE_SECURE', 'False').lower() == 'true'
