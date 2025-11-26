@@ -3,394 +3,143 @@
 {% block title %}{{ model.title }} - DreamEcho{% endblock %}
 
 {% block content %}
-<div class="model-detail-container">
-    <div class="model-viewer-section">
-        <model-viewer 
-            src="{{ url_for('static', filename=model.model_path) }}"
-            ar
-            ar-modes="webxr scene-viewer quick-look"
-            camera-controls
-            shadow-intensity="1"
-            auto-rotate
-            camera-orbit="45deg 55deg 2.5m"
-            exposure="1"
-            style="width: 100%; height: 500px;">
-        </model-viewer>
-    </div>
+<div class="container mx-auto px-4 py-8 max-w-6xl">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- Left Column: 3D Model & Main Info (Dark Card) -->
+        <div class="space-y-6">
+            <!-- 3D Viewer Card -->
+            <div class="glass rounded-2xl overflow-hidden bg-black/40 border border-white/10">
+                <div class="relative h-[500px] w-full bg-gradient-to-b from-gray-900 to-black">
+                    {% if model.model_path %}
+                    <model-viewer 
+                        src="{{ model.model_path }}"
+                        poster="{{ url_for('static', filename='images/poster_placeholder.png') }}"
+                        ar
+                        ar-modes="webxr scene-viewer quick-look"
+                        camera-controls
+                        shadow-intensity="1"
+                        auto-rotate
+                        camera-orbit="45deg 55deg 2.5m"
+                        exposure="1"
+                        class="w-full h-full">
+                    </model-viewer>
+                    {% else %}
+                    <div class="flex items-center justify-center h-full text-white/50">
+                        <p>{{ _('3D Model Processing...') }}</p>
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Creator Badge overlay -->
+                    <div class="absolute top-4 left-4 flex items-center space-x-2 bg-black/60 backdrop-blur-md rounded-full px-3 py-1.5 border border-white/10">
+                        <img src="{{ url_for('static', filename='images/avatar.jpg') }}" class="w-6 h-6 rounded-full" onerror="this.style.backgroundColor='#333'">
+                        <div>
+                            <p class="text-xs text-white font-bold">{{ model.creator }}</p>
+                            <p class="text-[10px] text-gray-400">Student</p>
+                        </div>
+                        <span class="ml-2 text-xs font-mono text-green-400">2.3k</span>
+                    </div>
+                </div>
+                
+                <!-- Tags Section -->
+                <div class="p-6">
+                    <div class="flex flex-wrap gap-2 mb-4">
+                        {% for tag in model.tags %}
+                        <span class="px-3 py-1 bg-blue-900/30 text-blue-400 rounded-full text-xs border border-blue-800/50">{{ tag }}</span>
+                        {% endfor %}
+                        {% if not model.tags %}
+                        <span class="px-3 py-1 bg-blue-900/30 text-blue-400 rounded-full text-xs border border-blue-800/50">Dream</span>
+                        <span class="px-3 py-1 bg-blue-900/30 text-blue-400 rounded-full text-xs border border-blue-800/50">AI</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-6">
+                        <h3 class="text-sm font-bold text-white mb-2">{{ _('Dream description') }}</h3>
+                        <p class="text-gray-300 text-sm leading-relaxed italic">"{{ model.description }}"</p>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-sm font-bold text-white mb-2">{{ _('Dream analysis') }}</h3>
+                        <p class="text-gray-400 text-xs leading-relaxed">
+                            {{ model.interpretation.psychology or _('AI analysis in progress...') }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Actions -->
+            <div class="flex gap-4">
+                <button class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm transition-colors">
+                    {{ _('Mint as NFT') }}
+                </button>
+                <button class="flex-1 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl font-bold text-sm transition-colors border border-white/10">
+                    {{ _('Download .GLB') }}
+                </button>
+            </div>
+        </div>
 
-    <div class="model-info-section">
-        <h1 class="model-title">{{ model.title }}</h1>
-        <div class="model-meta">
-            <span class="creator">创作者: {{ model.creator }}</span>
-            <span class="created-at">创建时间: {{ model.created_at }}</span>
+        <!-- Right Column: Detailed Analysis (Light Card) -->
+        <div class="glass bg-white text-gray-900 rounded-2xl p-8 h-fit border border-gray-200 shadow-xl">
+            <h2 class="text-2xl font-bold mb-8 text-gray-900">{{ _('Dream Analysis Result') }}</h2>
+            
+            <div class="grid grid-cols-3 gap-6 mb-8 border-b border-gray-100 pb-8">
+                <div>
+                    <h4 class="font-bold text-sm mb-3">{{ _('Keywords') }}</h4>
+                    <div class="text-xs text-blue-600 space-y-1">
+                        {% if model.interpretation.keywords %}
+                            {% for kw in model.interpretation.keywords.split(',') %}
+                            <p>{{ kw.strip() }}</p>
+                            {% endfor %}
+                        {% else %}
+                            <p>Processing...</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm mb-3">{{ _('Core Symbols') }}</h4>
+                    <div class="text-xs text-gray-600 space-y-1">
+                        {% if model.interpretation.symbols %}
+                            {% for sym in model.interpretation.symbols.split(',') %}
+                            <p>{{ sym.strip() }}</p>
+                            {% endfor %}
+                        {% else %}
+                            <p>Processing...</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div>
+                    <h4 class="font-bold text-sm mb-3">{{ _('Emotion Analysis') }}</h4>
+                    <div class="text-xs text-yellow-600 space-y-1">
+                        {% if model.interpretation.emotions %}
+                            {% for emo in model.interpretation.emotions.split(',') %}
+                            <p>{{ emo.strip() }}</p>
+                            {% endfor %}
+                        {% else %}
+                            <p>Processing...</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mb-8 border-b border-gray-100 pb-8">
+                <h4 class="font-bold text-sm mb-3">{{ _('Visual Description') }}</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    {{ model.interpretation.visual_description or _('Generating visual interpretation...') }}
+                </p>
+            </div>
+            
+            <div>
+                <h4 class="font-bold text-sm mb-3">{{ _('Psychological Interpretation') }}</h4>
+                <p class="text-xs text-gray-600 leading-relaxed">
+                    {{ model.interpretation.psychology or _('Analyzing psychological patterns...') }}
+                </p>
+            </div>
         </div>
         
-        <div class="model-price">
-            <span class="price-label">价格:</span>
-            <span class="price-value">{{ model.price }} ETH</span>
-        </div>
-
-        <div class="model-tags">
-            {% for tag in model.tags %}
-            <span class="tag">{{ tag }}</span>
-            {% endfor %}
-        </div>
-
-        <div class="model-description">
-            <h3>描述</h3>
-            <p>{{ model.description }}</p>
-        </div>
-
-        <div class="model-technical-info">
-            <h3>技术信息</h3>
-            <ul>
-                <li>格式: {{ model.format }}</li>
-                <li>多边形数量: {{ model.polygons }}</li>
-                <li>文件大小: {{ model.file_size }}</li>
-            </ul>
-        </div>
-
-        <div class="model-actions">
-            <button class="btn primary-btn">购买模型</button>
-            <button class="btn secondary-btn">添加到收藏</button>
-            <button class="btn ar-btn" onclick="enterAR()">AR 预览</button>
-        </div>
     </div>
 </div>
-
-<style>
-.model-detail-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-}
-
-.model-viewer-section {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-.model-info-section {
-    padding: 1rem;
-}
-
-.model-title {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #fff;
-}
-
-.model-meta {
-    display: flex;
-    gap: 1rem;
-    margin-bottom: 1rem;
-    color: #aaa;
-}
-
-.model-price {
-    font-size: 1.5rem;
-    margin: 1rem 0;
-    padding: 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-}
-
-.price-value {
-    color: #00ff88;
-    font-weight: bold;
-}
-
-.model-tags {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin: 1rem 0;
-}
-
-.tag {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.3rem 0.8rem;
-    border-radius: 15px;
-    font-size: 0.9rem;
-    color: #fff;
-}
-
-.model-description {
-    margin: 1rem 0;
-    color: #ddd;
-}
-
-.model-technical-info {
-    margin: 1rem 0;
-    color: #ddd;
-}
-
-.model-technical-info ul {
-    list-style: none;
-    padding: 0;
-}
-
-.model-technical-info li {
-    margin: 0.5rem 0;
-    color: #aaa;
-}
-
-.model-actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.btn {
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.primary-btn {
-    background: linear-gradient(45deg, #00ff88, #00a6ff);
-    color: #fff;
-}
-
-.secondary-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.ar-btn {
-    background: rgba(255, 255, 255, 0.1);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-@media (max-width: 768px) {
-    .model-detail-container {
-        grid-template-columns: 1fr;
-        padding: 1rem;
-    }
-
-    .model-viewer-section {
-        height: 300px;
-    }
-
-    .model-actions {
-        flex-direction: column;
-    }
-
-    .btn {
-        width: 100%;
-    }
-}
-</style>
-
-<script>
-function enterAR() {
-    const modelViewer = document.querySelector('model-viewer');
-    modelViewer.activateAR();
-}
-</script>
-{% endblock %}
-
-{% block extra_css %}
-<style>
-.model-detail-container {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    color: white;
-}
-
-.model-preview {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 15px;
-    overflow: hidden;
-}
-
-.preview-container {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    min-height: 500px;
-}
-
-.model-info {
-    background: rgba(0, 0, 0, 0.3);
-    border-radius: 15px;
-    padding: 2rem;
-}
-
-.model-header h1 {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    color: #fff;
-}
-
-.model-tags {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin-bottom: 1.5rem;
-}
-
-.tag {
-    background: rgba(0, 255, 157, 0.1);
-    border: 1px solid rgba(0, 255, 157, 0.3);
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.9rem;
-}
-
-.model-meta {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.creator-info {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-}
-
-.price-info {
-    text-align: right;
-}
-
-.price-label {
-    display: block;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-}
-
-.price-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #00ff9d;
-}
-
-.model-description {
-    margin-bottom: 2rem;
-}
-
-.model-description h3 {
-    margin-bottom: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.model-description p {
-    line-height: 1.6;
-    color: rgba(255, 255, 255, 0.8);
-}
-
-.model-actions {
-    display: grid;
-    grid-template-columns: 2fr 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 2rem;
-}
-
-.model-actions button {
-    padding: 1rem;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-.btn-purchase {
-    background: linear-gradient(45deg, #00ff9d, #00d4ff);
-    color: #000;
-    font-weight: bold;
-}
-
-.btn-ar {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.btn-download {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.model-actions button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-}
-
-.model-details h3 {
-    margin-bottom: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-.details-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.detail-item {
-    background: rgba(255, 255, 255, 0.05);
-    padding: 1rem;
-    border-radius: 8px;
-}
-
-.detail-label {
-    display: block;
-    font-size: 0.9rem;
-    color: rgba(255, 255, 255, 0.6);
-    margin-bottom: 0.3rem;
-}
-
-.detail-value {
-    font-size: 1rem;
-    color: rgba(255, 255, 255, 0.9);
-}
-
-@media (max-width: 768px) {
-    .model-detail-container {
-        grid-template-columns: 1fr;
-    }
-    
-    .model-actions {
-        grid-template-columns: 1fr;
-    }
-}
-</style>
 {% endblock %}
 
 {% block extra_js %}
 <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-<script nomodule src="https://unpkg.com/@google/model-viewer/dist/model-viewer-legacy.js"></script>
-{% endblock %} 
+{% endblock %}
