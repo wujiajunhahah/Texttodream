@@ -10,6 +10,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from werkzeug.security import generate_password_hash, check_password_hash
 import secrets
 from flask_babel import Babel, gettext as _
+from flask_migrate import Migrate
 
 # Create Flask app
 app = Flask(__name__)
@@ -21,6 +22,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize Extensions
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)  # Initialize Flask-Migrate
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -119,7 +121,15 @@ def inject_conf_var():
 # Routes
 @app.route('/')
 def index():
-    recent_models = Dream.query.filter_by(is_public=True).order_by(Dream.created_at.desc()).limit(6).all()
+    # Ensure database tables exist before querying
+    with app.app_context():
+        db.create_all()
+        
+    try:
+        recent_models = Dream.query.filter_by(is_public=True).order_by(Dream.created_at.desc()).limit(6).all()
+    except Exception:
+        recent_models = []
+        
     return render_template('index.html', recent_models=recent_models)
 
 @app.route('/create_dream', methods=['GET', 'POST'])
@@ -186,9 +196,13 @@ def create_dream():
 @app.route('/model_library')
 def model_library():
     page = request.args.get('page', 1, type=int)
-    models = Dream.query.filter_by(is_public=True).order_by(Dream.created_at.desc()).paginate(
-        page=page, per_page=12, error_out=False
-    )
+    try:
+        models = Dream.query.filter_by(is_public=True).order_by(Dream.created_at.desc()).paginate(
+            page=page, per_page=12, error_out=False
+        )
+    except Exception:
+        models = None
+        
     return render_template('model_library.html', models=models)
 
 @app.route('/model/<model_id>')
